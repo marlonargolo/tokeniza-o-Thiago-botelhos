@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Gerenciamento de Assinaturas</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciamento de Assinaturas</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+
+        <h2>Atualizar Assinatura</h2>
+        <form action="/update_subscription" method="post">
+            <label for="subscription_id">ID da Assinatura:</label>
+            <input type="text" id="subscription_id" name="subscription_id" required><br>
+            <label for="new_value">Valor:</label>
+            <input type="number" step="0.01" id="new_value" name="new_value" required><br>
+            <label for="update_type">Tipo de Atualização:</label>
+            <select id="update_type" name="update_type" required>
+                <option value="increase">Aumentar</option>
+                <option value="decrease">Diminuir</option>
+            </select><br>
+            <label for="due_date">Nova Data de Vencimento:</label>
+            <input type="date" id="due_date" name="due_date" required><br>
+            <label for="api_key">Sua Chave Token:</label>
+            <input type="text" id="api_key" name="api_key" required><br>
+            <button type="submit">Atualizar</button>
+        </form>
+
+        <h2>Enviar Alerta de Cobrança</h2>
+        <form action="/send_reminder" method="post">
+            <label for="customer_id">ID do Cliente:</label>
+            <input type="text" id="customer_id" name="customer_id" required><br>
+            <label for="due_date">Data de Vencimento:</label>
+            <input type="date" id="due_date" name="due_date" required><br>
+            <label for="value">Valor:</label>
+            <input type="number" step="0.01" id="value" name="value" required><br>
+            <label for="api_key">Sua Chave Token:</label>
+            <input type="text" id="api_key" name="api_key" required><br>
+            <button type="submit">Enviar Alerta</button>
+        </form>
+
+        <h2>Todas as Assinaturas</h2>
+        <ul>
+            {% for subscription in subscriptions %}
+            <li>
+                ID: {{ subscription.id }}, 
+                Valor: {{ subscription.value }}, 
+                Status: {{ subscription.status }},
+                Nome do Cliente: {{ subscription.customer_name }},
+                Data de Vencimento: {{ subscription.nextDueDate }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
