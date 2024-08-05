@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Detalhes do Cliente</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Detalhes do Cliente</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+
+        <h2>Informações do Cliente</h2>
+        <p>ID: {{ customer.id }}</p>
+        <p>Nome: {{ customer.name }}</p>
+        <p>Email: {{ customer.email }}</p>
+        <p>Telefone: {{ customer.phone }}</p>
+
+        <h2>Boletos dos Próximos Seis Meses</h2>
+        <ul>
+            {% for payment in payments %}
+            <li>
+                ID: {{ payment.id }}, 
+                Valor: {{ payment.value }}, 
+                Status: {{ payment.status }},
+                Data de Vencimento: {{ payment.dueDate }}
+            </li>
+            {% endfor %}
+        </ul>
+        <h2>Ajustar Data de Vencimento</h2>
+        <form action="/update_due_date" method="post">
+            <label for="payment_id">ID do Pagamento:</label>
+            <input type="text" id="payment_id" name="payment_id" required><br>
+            <label for="new_due_date">Nova Data de Vencimento:</label>
+            <input type="date" id="new_due_date" name="new_due_date" required><br>
+            <button type="submit">Ajustar</button>
+        </form> 
+        <h2>Debitar Próxima Cobrança</h2>
+        <form action="{{ url_for('debit_next_charge_route') }}" method="POST">
+            <input type="hidden" name="subscription_id" value="{{ customer.subscription_id }}">
+            <button type="submit">Debitar</button>
+        </form>
+
+        <a href="{{ url_for('index') }}">Voltar</a>
+    </div>
+</body>
+</html>
+
+
+    
