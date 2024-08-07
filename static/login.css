@@ -1,0 +1,156 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }   
+    
+    body {
+        background: #005B83;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        
+    }
+    
+    html {
+    font-family: sans-serif, Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    }
+    
+    a { text-decoration: none;
+    
+    }
+    
+    ul { list-style: none;
+    
+    }
+    
+    /* estilos para a pagina */
+    .title {
+        font-size: 16px;
+        text-align: center;
+        margin-top: 150px;
+        color: #d3d3dc;
+        margin-top: 20px;
+        text-transform: uppercase;
+    }
+
+    section {
+        background-image: url(images/WhatsApp\ Image\ 2024-07-31\ at\ 22.11.46.jpeg);
+        background-size: 85%;
+        background-position: left;
+        display: flex;
+        border-radius: 30px;
+        margin: 50px;
+        width: 75%;
+        height: 80vh;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+
+    .container {
+        background: white;
+        box-sizing: border-box;
+        width: 60%;
+        color: #005B83;
+        padding: 40px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        gap: 20px;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    .container:hover {
+        transform: translateX(95%);
+        transition: 2s;
+    }
+
+    h2 {
+        font-size: 32px;
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+    }
+
+    label {
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color:  #005B83;
+    }
+
+    input {
+        width: 450px;
+        border: none;
+        border-bottom: 2px solid #333;
+        padding: 20px 0;
+        outline: none;
+    }
+
+    input:focus {
+        border-bottom: 2px solid #005B83;
+    }
+
+    button {
+        margin-top: 40px;
+        width: 150px;
+        height: 40px;
+        border: none;
+        background-color: #333;
+        color: #FFF;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: bold;
+        padding: 10px;
+        box-shadow: 2px 2px 0px #00aeff;
+    }
+
+    button:hover {
+        background: #005B83;
+    }
+
+    @media (max-width: 600px) {
+        .title {
+
+            margin-top: 100px;
+        }
+        
+
+        section {
+            margin: 10px;
+            margin-top: 30%;
+            width: 100%;
+            height: 50vh;
+            border-radius: 20px;
+            background-size: 85%;
+            background-position: left;
+        }
+    
+        .container {
+            width: 50%;
+            padding: 10px;
+            gap: 10px;
+            border-radius: 15px;
+        }
+    
+        h2 {
+            font-size: 20px;
+        }
+    
+        label {
+            font-size: 12px;
+        }
+    
+        input {
+            width: 100%;
+        }
+    
+        button {
+            width: 80%;
+            height: 35px;
+        }
+    }
