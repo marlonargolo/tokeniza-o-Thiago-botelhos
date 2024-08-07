@@ -1,13 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import requests
 import json
+import logging
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-base_url = 'https://sandbox.asaas.com/api/v3'
+base_url = 'https://www.asaas.com/api/v3'
 
-# Função para atualizar valor de assinatura
+# Configura o logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Função para atualizar valor de assinatura com logging
 def update_subscription(subscription_id, new_value, new_date, api_key):
     url = f'{base_url}/subscriptions/{subscription_id}'
     headers = {
@@ -18,20 +22,24 @@ def update_subscription(subscription_id, new_value, new_date, api_key):
         'value': new_value,
         'date': new_date
     }
+    
+    # Log do JSON que está sendo enviado
+    logging.debug(f'Sending JSON to {url}: {json.dumps(data)}')
+    
     response = requests.put(url, headers=headers, json=data)
     try:
         response.raise_for_status()
+        logging.debug(f'Successfully updated subscription: {response.json()}')
         return response.json(), response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     return {}, response.status_code
 
-
-# Função para enviar alerta de cobrança
+# Função para enviar alerta de cobrança com logging
 def send_payment_reminder(customer_id, due_date, value, api_key):
     url = f'{base_url}/payments'
     headers = {
@@ -45,19 +53,24 @@ def send_payment_reminder(customer_id, due_date, value, api_key):
         'billingType': 'BOLETO',
         'description': 'Mensalidade em atraso'
     }
+
+    # Log do JSON que está sendo enviado
+    logging.debug(f'Sending JSON to {url}: {json.dumps(data)}')
+    
     response = requests.post(url, headers=headers, json=data)
     try:
         response.raise_for_status()
+        logging.debug(f'Successfully sent payment reminder: {response.json()}')
         return response.json(), response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     return {}, response.status_code
 
-# Função para obter todas as assinaturas
+# Função para obter todas as assinaturas com logging
 def get_all_subscriptions(api_key):
     url = f'{base_url}/subscriptions'
     headers = {'access_token': api_key}
@@ -66,6 +79,7 @@ def get_all_subscriptions(api_key):
     try:
         response.raise_for_status()
         subscriptions = response.json()
+        logging.debug(f'Subscriptions received: {subscriptions}')
         if response.status_code == 200:
             for subscription in subscriptions.get('data', []):
                 customer_id = subscription.get('customer')
@@ -73,15 +87,15 @@ def get_all_subscriptions(api_key):
                 subscription['customer_name'] = customer_details.get('name', 'Nome não disponível')
         return subscriptions, response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     
     return {}, response.status_code
 
-# Função para obter detalhes do cliente
+# Função para obter detalhes do cliente com logging
 def get_customer_details(customer_id, api_key):
     url = f'{base_url}/customers/{customer_id}'
     headers = {'access_token': api_key}
@@ -89,17 +103,18 @@ def get_customer_details(customer_id, api_key):
     
     try:
         response.raise_for_status()
+        logging.debug(f'Customer details received: {response.json()}')
         return response.json(), response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     
     return {}, response.status_code
 
-# Função para obter todos os pagamentos de um cliente
+# Função para obter todos os pagamentos de um cliente com logging
 def get_customer_payments(customer_id, api_key):
     url = f'{base_url}/payments'
     headers = {'access_token': api_key}
@@ -108,17 +123,18 @@ def get_customer_payments(customer_id, api_key):
     
     try:
         response.raise_for_status()
+        logging.debug(f'Customer payments received: {response.json()}')
         return response.json(), response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     
     return {}, response.status_code
 
-# Função para atualizar a data de vencimento do pagamento
+# Função para atualizar a data de vencimento do pagamento com logging
 def update_due_date(payment_id, new_due_date, api_key):
     url = f'{base_url}/payments/{payment_id}'
     headers = {
@@ -126,19 +142,24 @@ def update_due_date(payment_id, new_due_date, api_key):
         'access_token': api_key
     }
     data = {'dueDate': new_due_date}
+    
+    # Log do JSON que está sendo enviado
+    logging.debug(f'Sending JSON to {url}: {json.dumps(data)}')
+    
     response = requests.put(url, headers=headers, json=data)
     try:
         response.raise_for_status()
+        logging.debug(f'Successfully updated due date: {response.json()}')
         return response.json(), response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     return {}, response.status_code
 
-#Função para atualizad a data da mensalidde
+# Função para atualizar a data da mensalidade com logging
 def update_subscription_due_date(subscription_id, new_due_date, api_key):
     url = f'{base_url}/subscriptions/{subscription_id}'
     headers = {
@@ -146,21 +167,24 @@ def update_subscription_due_date(subscription_id, new_due_date, api_key):
         'access_token': api_key
     }
     data = {'dueDate': new_due_date}
+    
+    # Log do JSON que está sendo enviado
+    logging.debug(f'Sending JSON to {url}: {json.dumps(data)}')
+    
     response = requests.put(url, headers=headers, json=data)
     try:
         response.raise_for_status()
+        logging.debug(f'Successfully updated subscription due date: {response.json()}')
         return response.json(), response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     return {}, response.status_code
 
-
-
-# Função para debitar a próxima cobrança
+# Função para debitar a próxima cobrança com logging
 def debit_next_charge(subscription_id, api_key):
     url = f'{base_url}/subscriptions/{subscription_id}/debit'
     headers = {'access_token': api_key}
@@ -168,18 +192,19 @@ def debit_next_charge(subscription_id, api_key):
     try:
         response.raise_for_status()
         if response.text:
+            logging.debug(f'Debit next charge response: {response.json()}')
             return response.json(), response.status_code
         else:
             return {}, response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     return {}, response.status_code
 
-# Função para obter todos os clientes
+# Função para obter todos os clientes com logging
 def get_all_customers(api_key):
     url = f'{base_url}/customers'
     headers = {'access_token': api_key}
@@ -187,13 +212,14 @@ def get_all_customers(api_key):
     
     try:
         response.raise_for_status()
+        logging.debug(f'All customers received: {response.json()}')
         return response.json(), response.status_code
     except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logging.error(f'HTTP error occurred: {http_err} - {response.text}')
     except requests.exceptions.RequestException as err:
-        print(f'Error occurred: {err}')
+        logging.error(f'Error occurred: {err}')
     except ValueError:
-        print('Invalid JSON received')
+        logging.error('Invalid JSON received')
     
     return {}, response.status_code
 
@@ -237,7 +263,6 @@ def update_sub():
         flash('Erro ao atualizar assinatura.', 'danger')
 
     return redirect(url_for('index'))
-
 
 @app.route('/send_reminder', methods=['POST'])
 def send_reminder():
@@ -287,7 +312,7 @@ def update_subscription_due_date_route():
     else:
         flash('Erro ao atualizar data de vencimento da assinatura.', 'danger')
 
-    return redirect(url_for('index'))    
+    return redirect(url_for('index'))
 
 @app.route('/debit_next_charge', methods=['POST'])
 def debit_next_charge_route():
